@@ -30,7 +30,9 @@ HEALTHSCRIPT
 chmod +x /srv/health/cgi-bin/health
 
 # Start health endpoint in background
-httpd -p "$HEALTH_PORT" -h /srv/health -c '/cgi-bin/*:*'
+# busybox httpd -c takes a config FILE path, not an inline string
+printf '/cgi-bin/*:*\n' > /srv/health/httpd.conf
+httpd -p "$HEALTH_PORT" -h /srv/health -c /srv/health/httpd.conf
 
 echo "gitea-backup ready — backup: $BACKUP_CRON, prune: $PRUNE_CRON"
 
