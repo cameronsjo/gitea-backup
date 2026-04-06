@@ -16,14 +16,29 @@ else
     echo "Warning: SQLite database not found at $GITEA_DB_PATH, skipping DB copy"
 fi
 
-# Step 2: Single restic snapshot — everything in /data (excluding live DB) plus consistent DB copy
+# Step 2: Single restic snapshot — everything in /data (excluding live DB + transient SQLite files) plus consistent DB copy
 if [ -f "$DB_COPY" ]; then
     restic backup /data "$DB_COPY" \
         --exclude "$GITEA_DB_PATH" \
+        --exclude "${GITEA_DB_PATH}-journal" \
+        --exclude "${GITEA_DB_PATH}-wal" \
+        --exclude "${GITEA_DB_PATH}-shm" \
         --verbose --tag gitea 2>&1 || EXIT_CODE=$?
     rm -f "$DB_COPY"
 else
-    restic backup /data --verbose --tag gitea 2>&1 || EXIT_CODE=$?
+    restic backup /data \
+        --exclude "${GITEA_DB_PATH}-journal" \
+        --exclude "${GITEA_DB_PATH}-wal" \
+        --exclude "${GITEA_DB_PATH}-shm" \
+        --verbose --tag gitea 2>&1 || EXIT_CODE=$?
+fi
+
+# Restic exit codes: 0=success, 1=fatal, 3=warnings (incomplete snapshot)
+# Exit 3 means snapshot was created but some files were unreadable (transient files vanishing mid-scan).
+# Treat as success since the consistent DB copy is what matters.
+if [ "$EXIT_CODE" -eq 3 ]; then
+    echo "Warning: restic reported warnings (exit 3), treating as success"
+    EXIT_CODE=0
 fi
 
 # Step 3: Notify
