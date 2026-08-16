@@ -42,8 +42,14 @@ if [ "$EXIT_CODE" -eq 3 ]; then
 fi
 
 # Step 3: Notify
+# DISCORD_NOTIFY_ON_SUCCESS=false suppresses the success post only; failures
+# always post. Only silence success where a staleness monitor would catch a
+# job that stops running altogether.
+NOTIFY_ON_SUCCESS="${DISCORD_NOTIFY_ON_SUCCESS:-true}"
 if [ -n "$DISCORD_WEBHOOK_URL" ]; then
-    if [ "$EXIT_CODE" -eq 0 ]; then
+    if [ "$EXIT_CODE" -eq 0 ] && [ "$NOTIFY_ON_SUCCESS" = "false" ]; then
+        echo "Backup succeeded; success notification suppressed (DISCORD_NOTIFY_ON_SUCCESS=false)"
+    elif [ "$EXIT_CODE" -eq 0 ]; then
         curl -sf -H "Content-Type: application/json" -d "{
             \"username\": \"Gitea Backup\",
             \"avatar_url\": \"https://about.gitea.com/gitea.png\",
