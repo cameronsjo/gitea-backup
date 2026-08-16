@@ -21,6 +21,7 @@ Gitea data to Azure Blob Storage using restic.
 | `RESTIC_REPOSITORY` | Yes | — | e.g. `azure:gitea-backup:` |
 | `RESTIC_PASSWORD` | Yes | — | Restic encryption key |
 | `DISCORD_WEBHOOK_URL` | No | — | Discord webhook for notifications |
+| `DISCORD_NOTIFY_ON_SUCCESS` | No | `true` | Post on successful backups. Set `false` to alert on failure only — pair with a staleness monitor so a job that stops running still surfaces |
 | `BACKUP_CRON` | No | `0 */6 * * *` | Backup schedule |
 | `PRUNE_CRON` | No | `0 1 * * 0` | Prune schedule (Sunday 1 AM) |
 | `RETENTION_DAILY` | No | `7` | Daily snapshots to keep |
