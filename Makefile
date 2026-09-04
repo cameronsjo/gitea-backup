@@ -2,7 +2,7 @@
 IMAGE_NAME := ghcr.io/cameronsjo/gitea-backup
 TAG := latest
 
-.PHONY: help build run stop logs shell test clean
+.PHONY: help build run stop logs shell test test-reaping clean
 
 ## Show available targets
 help:
@@ -41,6 +41,10 @@ shell:
 ## Test health endpoint (requires running container)
 test:
 	curl -sf http://localhost:8080/cgi-bin/health | head -1
+
+## Verify repeated health probes do not leave zombie CGI children
+test-reaping:
+	./tests/test-health-reaping.sh
 
 ## Remove built image
 clean:

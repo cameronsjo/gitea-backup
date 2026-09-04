@@ -9,6 +9,7 @@ RUN apk add --no-cache \
     sqlite \
     curl \
     busybox-extras \
+    tini \
     tzdata
 
 COPY scripts/ /scripts/
@@ -30,4 +31,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
 # Runs as root: Alpine crond requires root for /etc/crontabs/root,
 # and busybox httpd needs root to bind port 8080 at startup.
 # The container has no shell access exposed — acceptable trade-off.
-ENTRYPOINT ["/scripts/entrypoint.sh"]
+ENTRYPOINT ["/sbin/tini", "--", "/scripts/entrypoint.sh"]
