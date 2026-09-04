@@ -1,5 +1,5 @@
 ---
-status: done
+status: awaiting-merge
 issue: https://github.com/cameronsjo/gitea-backup/issues/2
 ---
 
@@ -23,4 +23,9 @@ Install Alpine's `tini` package and make `tini` PID 1, with the existing entrypo
 - [x] Add `tini` to the runtime image and put it at the entrypoint boundary.
 - [x] Add a container-level regression test that probes health repeatedly and fails if zombie children accumulate.
 - [x] Run the shell and container verification gates.
-- [x] Update the changelog and close issue #2 through the pull request.
+- [x] Update the changelog.
+- [ ] Merge pull request #4; issue #2 closes automatically.
+
+## Next step
+
+Merge [pull request #4](https://github.com/cameronsjo/gitea-backup/pull/4), publish the main-branch image, recreate the deployed container, and confirm repeated health probes leave no zombies.
